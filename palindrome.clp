@@ -1,6 +1,5 @@
 ; ----------------------------------------------------------
-; Clips Program to make an expert system that takes student's
-; marks as input and tells what to pursue in Undergraduates
+; Clips Program to detect if a string is Palindrome
 ; -----------------------------------------------------------
 ; -----------------------------------------------------------
 ; ------- Author: Saptak Sengupta ---------------------------
@@ -14,187 +13,53 @@
 ; ------Various Objects Needed --------
 ; -------------------------------------
 
-(deftemplate Stream (slot stream))
-(deftemplate Marks (slot marks))
-(deftemplate Favourite (slot favourite))
-(deftemplate Interest (slot interest))
+(deftemplate Original (slot original))
+(deftemplate Reverse (slot rev))
+
+;-------------------------------
+;--------Function to Reverse----
+;-------------------------------
+
+ (deffunction reverse (?string)
+       (bind ?rtn "")
+       (loop-for-count (?i (length ?string))
+          (bind ?rtn (str-cat (sub-string ?i ?i ?string) ?rtn)))
+       ?rtn)
 
 ; ------------------------
 ; ------INPUT-------------
 ; ------------------------
 
-(defrule GetStream
-   (declare (salience 200))
-   =>
-   (printout t "Enter Stream in Higher Secondary(science/arts/commerce): ")
-   (bind ?response (read))
-   (assert (Stream (stream ?response))))
-
-(defrule GetFavourite1
-   (Stream (stream science))
-   =>
-   (printout t "What is your favourite subject(maths/physics/chemistry/biology): ")
-   (bind ?response (read))
-   (assert (Favourite (favourite ?response))))
-
-(defrule GetFavourite2
-   (Stream (stream arts))
-   =>
-   (printout t "What is your favourite subject(history/geography/english): ")
-   (bind ?response (read))
-   (assert (Favourite (favourite ?response))))
-
-(defrule GetFavourite3
-   (Stream (stream commerce))
-   =>
-   (printout t "What is your favourite subject(economics/management/accountancy): ")
-   (bind ?response (read))
-   (assert (Favourite (favourite ?response))))
-
-(defrule GetInterest
-   =>
-   (printout t "What interests you the most(maths/computer/history/books): ")
-   (bind ?response (read))
-   (assert (Interest (interest ?response))))
-
-(defrule GetMarks
+(defrule GetOriginal
    (declare (salience 100))
    =>
-   (printout t "Marks in Higher Secondary: ")
+   (printout t "Enter String: ")
    (bind ?response (read))
-   (assert (Marks (marks ?response))))
+   (assert (Original (original ?response))))
 
 ;---------------------------
 ;--------RULES--------------
 ;---------------------------
 
-(defrule Undergrad1
-   (Favourite (favourite maths))
-   (Marks (marks ?m))
-   (test (>= ?m 75))
-   (Interest (interest maths))   
-   =>
-   (assert (grad done))
-   (printout t "You should take up B.Stat in Statistics" crlf))
-
-(defrule Undergrad2
-   (Favourite (favourite maths))
-   (Marks (marks ?m))
-   (test (< ?m 75))
-   (Interest (interest maths))
-   =>
-   (assert (grad done))
-   (printout t "You should take up B.Sc in Maths" crlf))
-
-(defrule Undergrad3
-   (or (Favourite (favourite maths)) (Favourite (favourite physics)))
-   (Marks (marks ?m))
-   (test (>= ?m 75))
-   (Interest (interest computer))
-   =>
-   (assert (grad done))
-   (printout t "You should take up B.Tech in Computer Science or I.T." crlf))
-
-(defrule Undergrad4
-   (or (Favourite (favourite maths)) (Favourite(favourite physics)))
-   (Marks (marks ?m))
-   (test (< ?m 75))
-   (Interest (interest computer))
-   =>
-   (assert (grad done))
-   (printout t "You should take up B.Sc in Computer Application" crlf))
-
-(defrule Undergrad5
-   (Favourite (favourite physics))
-   (Marks (marks ?m))
-   (test (< ?m 85))
-   (Interest (interest maths))
-   =>
-   (assert (grad done))
-   (printout t "You should take up B.Sc in Physics" crlf))
-
-
-(defrule Undergrad6
-   (Favourite (favourite physics))
-   (Marks (marks ?m))
-   (test (>= ?m 85))
-   (Interest (interest maths))
-   =>
-   (assert (grad done))
-   (printout t "You should try for Engineering in Mechanical or Electronics" crlf))
-
-(defrule Undergrad7
-   (Favourite (favourite chemistry))
-   =>
-   (assert (grad done))
-   (printout t "You should study Chemical Engineering or Chemistry Honours" crlf))
-
-(defrule Undergrad8
-   (Favourite (favourite biology))
-   (Marks (marks ?m))
-   (test (>= ?m 85))
-   =>
-   (assert (grad done))
-   (printout t "You should try for MBBS" crlf))
-
-(defrule Undergrad9
-   (Favourite (favourite biology))
-   (Marks (marks ?m))
-   (test (< ?m 85))
-   =>
-   (assert (grad done))
-   (printout t "You should take up B.Sc in Botany or Zoology" crlf))
-
-(defrule Undergrad10
-   (Favourite (favourite economics))
-   =>
-   (assert (grad done))
-   (printout t "You should study Economics" crlf))
-
-(defrule Undergrad11
-   (Favourite (favourite accountancy))
-   (Marks (marks ?m))
-   (test (>= ?m 90))
-   (Interest (interest maths))
-   =>
-   (assert (grad done))
-   (printout t "You should take up Chatered Accountancy" crlf))
-
-(defrule Undergrad12
-   (Favourite (favourite accountancy))
-   =>
-   (assert (grad done))
-   (printout t "You should take up Commercial Application" crlf))
-
-(defrule Undergrad13
-   (Favourite (favourite management))
-   =>
-   (assert (grad done))
-   (printout t "You should do Bachelor in Business Administration" crlf))
-
-(defrule Undergrad14
-   (Favourite (favourite geography))
-   =>
-   (assert (grad done))
-   (printout t "You should study Geography" crlf))
-
-(defrule Undergrad15
-   (Favourite (favourite history))
-   (Interest (interest history))
-   =>
-   (assert (grad done))
-   (printout t "You should study History" crlf))
-
-(defrule Undergrad16
-   (Favourite (favourite english))
-   (or (Interest (interest computer)) (or (Interest (interest books)) (Interest (interest history))))
-   =>
-   (assert (grad done))
-   (printout t "You should study English" crlf))
-
-(defrule None
+(defrule ReverseStr
    (declare (salience -100))
-   (and (not (grad done)))
+   (Original (original ?s))
    =>
-   (printout t "Results are Inconclusive!!!" crlf))
+   (bind ?r (reverse ?s))
+   (assert (Reverse (rev ?r)))
+   (printout t "Reverse is: " ?r crlf))
 
+(defrule Palindrome
+   (declare (salience -200))
+   (Original (original ?s))
+   (Reverse (rev ?r))
+   (test (= (str-compare ?r ?s) 0))
+   =>
+   (assert (pali yes))
+   (printout t "Palindrome" crlf))
+
+(defrule Notpali
+   (declare (salience -200))
+   (not (pali yes))
+   =>
+   (printout t "Not Palindrome" crlf))
